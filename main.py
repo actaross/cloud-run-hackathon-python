@@ -105,40 +105,10 @@ def index():
 
 @app.route("/", methods=['POST'])
 def move():
-    #Original
-    request.get_data()
+    global player_score, previous_score, score_stagnant_count, consecutive_hits_count
+        #Original
     request.get_data()
     logger.info(request.json)
-    global player_score, previous_score, score_stagnant_count, consecutive_hits_count
-    opponents_data = set_player_and_opponents(request.json)
-    logger.info(opponents_data)
-    if player_score > previous_score:
-        previous_score = player_score
-        score_stagnant_count = 0
-
-    if was_hit:
-        consecutive_hits_count += 1
-        if consecutive_hits_count >= 2:
-            last_hit_direction = get_opponent_direction(player_x, player_y, opponents_data)
-            if last_hit_direction != player_direction:
-                if last_hit_direction == 'N':
-                    return 'R'
-                elif last_hit_direction == 'S':
-                    return 'L'
-                else:
-                    return 'T'
-    # Reset consecutive hits count if not hit in the current turn
-    if not was_hit:
-        consecutive_hits_count = 0
-
-    # Check if any opponent is in front and within range distance 3
-    if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-        return 'T'
-
-    # Check if score has not changed for 5 consecutive turns
-    if player_score == previous_score and score_stagnant_count <= 4:
-        score_stagnant_count += 1
-        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Original
     return moves[random.randrange(len(moves))]
 
