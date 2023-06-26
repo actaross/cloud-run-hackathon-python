@@ -36,34 +36,31 @@ previous_score = None
 score_stagnant_count = 0
 consecutive_hits_count = 0
 
+    
 def set_player_and_opponents(data):
-    global player_url, player_x, player_y, player_direction, player_score, was_hit, previous_score
-    global score_stagnant_count, consecutive_hits_count
-
-    arena_data = data['arena']
-    player_data = None
-    opponents_data = []
-
-    # Find player's data based on self href URL
-    for url, info in arena_data['state'].items():
-        if info['_links']['self']['href'] == player_url:
-            player_data = info
+    global player_url, opponents
+    player_url = None
+    opponents = []
+    
+    # Extract player URL and opponent data from the received data
+    for url, player_data in data['arena']['state'].items():
+        if url.endswith(service_url):
+            player_url = url
+            set_player_position(player_data['x'], player_data['y'])
+            set_player_direction(player_data['direction'])
+            set_player_score(player_data['score'])
+            set_player_hit_status(player_data['wasHit'])
         else:
-            opponents_data.append(info)
-
-    # Set player's attributes
-    player_x = player_data['x']
-    player_y = player_data['y']
-    player_direction = player_data['direction']
-    player_score = player_data['score']
-    was_hit = player_data['wasHit']
-    previous_score = player_score
-
-    # Reset counts
-    score_stagnant_count = 0
-    consecutive_hits_count = 0
-
-    return opponents_data
+            opponent = {
+                'url': url,
+                'position': (player_data['x'], player_data['y']),
+                'direction': player_data['direction'],
+                'score': player_data['score'],
+                'wasHit': player_data['wasHit']
+            }
+            opponents.append(opponent)
+    
+    return player_url, opponents
 
 def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
@@ -108,8 +105,9 @@ def move():
     global player_score, previous_score, score_stagnant_count, consecutive_hits_count
         #Original
     request.get_data()
-    logger.info(request.json)
-    # Original
+    player_url, opponents = set_player_and_opponents(request.json)
+    
+     # Original
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
