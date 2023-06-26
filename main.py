@@ -148,16 +148,6 @@ def move():
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return 'T'
-    # Check if consecutive hits occurred and move to escape
-    if consecutive_hits_count >= 2:
-        last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
-        if last_hit_direction != player_direction:
-            if last_hit_direction == 'N':
-                return 'R'
-            elif last_hit_direction == 'S':
-                return 'L'
-            else:
-                return 'F'
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
