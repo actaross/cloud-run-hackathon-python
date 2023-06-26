@@ -88,7 +88,7 @@ def calculate_threat_level(opponent, player_x, player_y):
     return 1 / distance
 
 def get_opponent_direction(player_x, player_y, opponents):
-for opponent in opponents:
+    for opponent in opponents:
         opp_x, opp_y = opponent['position']
         if calculate_distance(player_x, player_y, opp_x, opp_y) <= 3:
             return opponent['direction']
