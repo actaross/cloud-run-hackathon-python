@@ -121,6 +121,7 @@ def move():
         logger.info("Score is increasing")
         previous_score = player_score
         score_stagnant_count = 0
+        return 'T'
 
     # Check if consecutive hits occurred and move to escape
     if was_hit:
