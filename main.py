@@ -34,6 +34,7 @@ score_stagnant_count = 0
 player = None
 opponents = []
 
+
 # Helper function to calculate Euclidean distance between two points
 def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
@@ -92,7 +93,24 @@ def index():
 @app.route("/", methods=['POST'])
 def move():
     #Original
-    request.get_data()
+    #request.get_data()
+    global player, opponents
+    data = request.get_json()
+
+    # Set player and opponents
+    set_player_and_opponent(data)
+
+    # Extract player information
+    player_x = player['position'][0]
+    player_y = player['position'][1]
+    player_direction = player['direction']
+    was_hit = player['wasHit']
+    player_score = player['score']
+    
+    # Check if score is increasing
+    if player_score > previous_score:
+        previous_score = player_score
+        score_stagnant_count = 0
     
     # Original
     return moves[random.randrange(len(moves))]
