@@ -30,6 +30,10 @@ previous_score = 0
 consecutive_hits_count = 0
 score_stagnant_count = 0
 
+# Global variables
+player = None
+opponents = []
+
 # Helper function to calculate Euclidean distance between two points
 def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
@@ -69,30 +73,16 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
 
     return False
 
-def set_player_and_opponent(arena_state):
-    player = None
-    opponents = []
+def set_player_and_opponent(data):
+    global player, opponents
 
-    for player_url, player_info in arena_state['arena']['state'].items():
-        if player_url == service_url:
-            player = {
-                'x': player_info['x'],
-                'y': player_info['y'],
-                'direction': player_info['direction'],
-                'wasHit': player_info['wasHit'],
-                'score': player_info['score']
-            }
+    player_id = data['arena']['self']
+    for player_data in data['arena']['state'].values():
+        if player_data['id'] == player_id:
+            player = player_data
         else:
-            opponent = {
-                'x': player_info['x'],
-                'y': player_info['y'],
-                'direction': player_info['direction'],
-                'wasHit': player_info['wasHit'],
-                'score': player_info['score']
-            }
-            opponents.append(opponent)
+            opponents.append(player_data)
 
-    return player, opponents
 
 @app.route("/", methods=['GET'])
 def index():
@@ -102,43 +92,41 @@ def index():
 def move():
     #Original
     #request.get_data()
-    global player_x, player_y, player_direction, player_score, previous_score, was_hit, consecutive_hits_count, score_stagnant_count, previous_move
-    # Extract data from the POST request
-    data = request.get_json()
-    player_x = data['arena']['state']['https://YOUR_SERVICE_URL']['x']
-    player_y = data['arena']['state']['https://YOUR_SERVICE_URL']['y']
-    player_direction = data['arena']['state']['https://YOUR_SERVICE_URL']['direction']
-    player_score = data['arena']['state']['https://YOUR_SERVICE_URL']['score']
-    was_hit = data['arena']['state']['https://YOUR_SERVICE_URL']['wasHit']
-    opponents = []
-    for url, opponent_data in data['arena']['state'].items():
-        if url != 'https://YOUR_SERVICE_URL':
-            opponents.append(opponent_data)
+   global player, opponents
 
+    data = request.get_json()
+
+    # Set player and opponents
+    set_player_and_opponent(data)
+
+    # Extract player information
+    player_x = player['position'][0]
+    player_y = player['position'][1]
+    player_direction = player['direction']
+    was_hit = player['wasHit']
+    player_score = player['score']
+    
     # Check if score is increasing
     if player_score > previous_score:
-        logger.info("Score is increasing")
         previous_score = player_score
         score_stagnant_count = 0
-        return 'T'
 
     # Check if consecutive hits occurred and move to escape
     if was_hit:
-        logger.info("Was hit")
         consecutive_hits_count += 1
-        if consecutive_hits_count >= 2:
-            logger.info("Consecutive hits occurred")
+        if consecutive_hits_count == 2:
             # Get the last hit direction
             last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
 
             # Move to escape based on the last hit direction
             if last_hit_direction != player_direction:
-                logger.info(f"Turning {last_hit_direction}")
-                return last_hit_direction
-            else:
-                move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-                logger.info(f"Turning {move}")
-                return move
+                if last_hit_direction == 'N':
+                    return 'R'
+                elif last_hit_direction == 'S':
+                    return 'L'
+                else:
+                    return 'T'
+            return 'F'
 
     # Reset consecutive hits count if not hit in the current turn
     if not was_hit:
@@ -146,16 +134,12 @@ def move():
 
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-        logger.info("Opponent in front, throwing")
-        previous_move = 'T'
         return 'T'
 
     # Check if score has not changed for 5 consecutive turns
     if player_score == previous_score and score_stagnant_count <= 4:
-        logger.info("Score has not changed, taking random action")
         score_stagnant_count += 1
-        previous_move = random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-        return previous_move
+        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
 
     # Calculate threat levels for all opponents
     threat_levels = []
@@ -173,40 +157,28 @@ def move():
     target_x, target_y = target_opponent['position']
     if player_direction == 'N':
         if target_y < player_y:
-            logger.info("Moving forward")
             return 'F'
         elif target_y > player_y:
-            move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-            logger.info(f"Turning {move}")
-            return move
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
     elif player_direction == 'S':
         if target_y < player_y:
-            move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-            logger.info(f"Turning {move}")
-            return move
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
         elif target_y > player_y:
-            logger.info("Moving forward")
             return 'F'
     elif player_direction == 'W':
         if target_x < player_x:
-            logger.info("Moving forward")
             return 'F'
         elif target_x > player_x:
-            move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-            logger.info(f"Turning {move}")
-            return move
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
     elif player_direction == 'E':
         if target_x < player_x:
-            move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-            logger.info(f"Turning {move}")
-            return move
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
         elif target_x > player_x:
-            logger.info("Moving forward")
             return 'F'
 
     # If no specific conditions are met, move forward ('F') by default
-    logger.info("Moving forward")
     return 'F'
+    
     # Original
     # return moves[random.randrange(len(moves))]
 
