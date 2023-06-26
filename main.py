@@ -111,7 +111,22 @@ def move():
     if player_score > previous_score:
         previous_score = player_score
         score_stagnant_count = 0
-    
+    # Check if consecutive hits occurred and move to escape
+    if was_hit:
+        consecutive_hits_count += 1
+        if consecutive_hits_count == 2:
+            # Get the last hit direction
+            last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+            # Move to escape based on the last hit direction
+            if last_hit_direction != player_direction:
+                if last_hit_direction == 'N':
+                    return 'R'
+                elif last_hit_direction == 'S':
+                    return 'L'
+                else:
+                    return 'T'
+            return 'F'
+            
     # Original
     return moves[random.randrange(len(moves))]
 
