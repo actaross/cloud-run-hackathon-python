@@ -28,7 +28,6 @@ moves = ['F', 'T', 'L', 'R']
 previous_score = 0
 score_stagnant_count = 0
 consecutive_hits_count = 0
-
 player_url = ""
 player_x = 0
 player_y = 0
@@ -36,6 +35,7 @@ player_direction = ""
 player_score = 0
 player_hit = False
 opponents = []
+
 
 def set_player_position(x, y):
     global player_x, player_y
@@ -129,7 +129,7 @@ def move():
         previous_score = player_score
         score_stagnant_count = 0
         return 'T'
-    else
+    else:
         previous_score= player_score
     return moves[random.randrange(len(moves))]
 
