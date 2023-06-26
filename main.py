@@ -16,13 +16,33 @@
 import os
 import logging
 import random
-from flask import Flask, request
+from flask import Flask, request, jsonify
+
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 moves = ['F', 'T', 'L', 'R']
+
+# Global variables
+player_direction = 'N'
+player_score = 0
+previous_score = 0
+previous_move = ''
+score_stagnant_count = 0
+consecutive_hits_count = 0
+
+# Helper function to calculate Euclidean distance between two points
+def calculate_distance(x1, y1, x2, y2):
+    return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+# Helper function to calculate threat level of an opponent
+def calculate_threat_level(opponent, player_x, player_y):
+    opp_x, opp_y = opponent['position']
+    distance = calculate_distance(player_x, player_y, opp_x, opp_y)
+    return 1 / distance
+
 
 @app.route("/", methods=['GET'])
 def index():
