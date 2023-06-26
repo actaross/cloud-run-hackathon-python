@@ -92,96 +92,10 @@ def index():
 @app.route("/", methods=['POST'])
 def move():
     #Original
-    #request.get_data()
-   global player, opponents
-
-    data = request.get_json()
-
-    # Set player and opponents
-    set_player_and_opponent(data)
-
-    # Extract player information
-    player_x = player['position'][0]
-    player_y = player['position'][1]
-    player_direction = player['direction']
-    was_hit = player['wasHit']
-    player_score = player['score']
-    
-    # Check if score is increasing
-    if player_score > previous_score:
-        previous_score = player_score
-        score_stagnant_count = 0
-
-    # Check if consecutive hits occurred and move to escape
-    if was_hit:
-        consecutive_hits_count += 1
-        if consecutive_hits_count == 2:
-            # Get the last hit direction
-            last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
-
-            # Move to escape based on the last hit direction
-            if last_hit_direction != player_direction:
-                if last_hit_direction == 'N':
-                    return 'R'
-                elif last_hit_direction == 'S':
-                    return 'L'
-                else:
-                    return 'T'
-            return 'F'
-
-    # Reset consecutive hits count if not hit in the current turn
-    if not was_hit:
-        consecutive_hits_count = 0
-
-    # Check if any opponent is in front and within range distance 3
-    if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-        return 'T'
-
-    # Check if score has not changed for 5 consecutive turns
-    if player_score == previous_score and score_stagnant_count <= 4:
-        score_stagnant_count += 1
-        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-
-    # Calculate threat levels for all opponents
-    threat_levels = []
-    for opponent in opponents:
-        threat_level = calculate_threat_level(opponent, player_x, player_y)
-        threat_levels.append((opponent, threat_level))
-
-    # Sort opponents by threat level in descending order
-    sorted_opponents = sorted(threat_levels, key=lambda x: x[1], reverse=True)
-
-    # Target opponent with highest threat level
-    target_opponent = sorted_opponents[0][0]
-
-    # Determine the direction to the target opponent based on player's direction
-    target_x, target_y = target_opponent['position']
-    if player_direction == 'N':
-        if target_y < player_y:
-            return 'F'
-        elif target_y > player_y:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-    elif player_direction == 'S':
-        if target_y < player_y:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-        elif target_y > player_y:
-            return 'F'
-    elif player_direction == 'W':
-        if target_x < player_x:
-            return 'F'
-        elif target_x > player_x:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-    elif player_direction == 'E':
-        if target_x < player_x:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-        elif target_x > player_x:
-            return 'F'
-
-    # If no specific conditions are met, move forward ('F') by default
-    return 'F'
+    request.get_data()
     
     # Original
-    # return moves[random.randrange(len(moves))]
+    return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
