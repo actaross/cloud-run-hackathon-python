@@ -123,13 +123,21 @@ def move():
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
     # Check if score is increasing
+    print("Player Information:")
+    print(f"Position: ({player_x}, {player_y})")
+    print(f"Direction: {player_direction}")
+    print(f"Hit: {player_hit}")
+    print(f"Score: {player_score}")
+    
     if player_score > previous_score:
         previous_score = player_score
         score_stagnant_count = 0
         return 'T'
     else:
         previous_score= player_score
-    
+    print(f"Score: {player_score}")
+    print(f"previous_score: {previous_score}")
+    print(f"consecutive_hits_count: {consecutive_hits_count}")
     if player_hit:
         consecutive_hits_count += 1
         if consecutive_hits_count >= 2:
