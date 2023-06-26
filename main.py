@@ -36,12 +36,38 @@ previous_score = None
 score_stagnant_count = 0
 consecutive_hits_count = 0
 
+ervice_url = "https://YOUR_SERVICE_URL"  # Replace with the actual service URL
+player_url = ""
+player_x = 0
+player_y = 0
+player_direction = ""
+player_score = 0
+player_hit = False
+opponents = []
+
+def set_player_position(x, y):
+    global player_x, player_y
+    player_x = x
+    player_y = y
+
+def set_player_direction(direction):
+    global player_direction
+    player_direction = direction
+
+def set_player_score(score):
+    global player_score
+    player_score = score
+
+def set_player_hit_status(hit):
+    global player_hit
+    player_hit = hit
+
     
 def set_player_and_opponents(data):
     global player_url, opponents
     player_url = None
     opponents = []
-    
+    service_url = data['_links']['self']['href']
     # Extract player URL and opponent data from the received data
     for url, player_data in data['arena']['state'].items():
         if url.endswith(service_url):
