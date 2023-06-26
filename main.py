@@ -102,16 +102,19 @@ def index():
 def move():
     #Original
     #request.get_data()
-     global player_x, player_y, player_direction, was_hit, player_score, previous_score, score_stagnant_count, consecutive_hits_count
+         global player_x, player_y, player_direction, player_score, previous_score, was_hit, consecutive_hits_count, score_stagnant_count, previous_move
 
-    logger.info(request.json)
-
-    arena_state = request.json
-    opponents = set_player_and_opponent(arena_state)
-
-    logger.info(f"Player position: ({player_x}, {player_y}), Direction: {player_direction}")
-    logger.info(f"Player score: {player_score}")
-    logger.info(f"Opponents: {opponents}")
+    # Extract data from the POST request
+    data = request.get_json()
+    player_x = data['arena']['state']['https://YOUR_SERVICE_URL']['x']
+    player_y = data['arena']['state']['https://YOUR_SERVICE_URL']['y']
+    player_direction = data['arena']['state']['https://YOUR_SERVICE_URL']['direction']
+    player_score = data['arena']['state']['https://YOUR_SERVICE_URL']['score']
+    was_hit = data['arena']['state']['https://YOUR_SERVICE_URL']['wasHit']
+    opponents = []
+    for url, opponent_data in data['arena']['state'].items():
+        if url != 'https://YOUR_SERVICE_URL':
+            opponents.append(opponent_data)
 
     # Check if score is increasing
     if player_score > previous_score:
@@ -121,17 +124,21 @@ def move():
 
     # Check if consecutive hits occurred and move to escape
     if was_hit:
-        logger.info("Consecutive hits occurred")
+        logger.info("Was hit")
         consecutive_hits_count += 1
         if consecutive_hits_count >= 2:
+            logger.info("Consecutive hits occurred")
+            # Get the last hit direction
             last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+
+            # Move to escape based on the last hit direction
             if last_hit_direction != player_direction:
-                logger.info(f"Escaping to direction: {last_hit_direction}")
-                return jsonify({'move': last_hit_direction})
+                logger.info(f"Turning {last_hit_direction}")
+                return last_hit_direction
             else:
                 move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-                logger.info(f"Escaping by turning {move}")
-                return jsonify({'move': move})
+                logger.info(f"Turning {move}")
+                return move
 
     # Reset consecutive hits count if not hit in the current turn
     if not was_hit:
@@ -139,16 +146,16 @@ def move():
 
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-        logger.info("Opponent in front, turning around")
+        logger.info("Opponent in front, throwing")
         previous_move = 'T'
-        return jsonify({'move': 'T'})
+        return 'T'
 
     # Check if score has not changed for 5 consecutive turns
     if player_score == previous_score and score_stagnant_count <= 4:
+        logger.info("Score has not changed, taking random action")
         score_stagnant_count += 1
         previous_move = random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-        logger.info(f"Score stagnant, moving {previous_move}")
-        return jsonify({'move': previous_move})
+        return previous_move
 
     # Calculate threat levels for all opponents
     threat_levels = []
@@ -167,41 +174,40 @@ def move():
     if player_direction == 'N':
         if target_y < player_y:
             logger.info("Moving forward")
-            return jsonify({'move': 'F'})
+            return 'F'
         elif target_y > player_y:
             move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
             logger.info(f"Turning {move}")
-            return jsonify({'move': move})
+            return move
     elif player_direction == 'S':
         if target_y < player_y:
             move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
             logger.info(f"Turning {move}")
-            return jsonify({'move': move})
+            return move
         elif target_y > player_y:
             logger.info("Moving forward")
-            return jsonify({'move': 'F'})
+            return 'F'
     elif player_direction == 'W':
         if target_x < player_x:
             logger.info("Moving forward")
-            return jsonify({'move': 'F'})
+            return 'F'
         elif target_x > player_x:
             move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
             logger.info(f"Turning {move}")
-            return jsonify({'move': move})
+            return move
     elif player_direction == 'E':
         if target_x < player_x:
             move = random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
             logger.info(f"Turning {move}")
-            return jsonify({'move': move})
+            return move
         elif target_x > player_x:
             logger.info("Moving forward")
-            return jsonify({'move': 'F'})
+            return 'F'
 
     # If no specific conditions are met, move forward ('F') by default
     logger.info("Moving forward")
-    return jsonify({'move': 'F'})
-
-    
+    return 'F'
+ 
     
     
     # Original
