@@ -73,16 +73,17 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
 
     return False
 
-def set_player_and_opponent(data):
-    global player, opponents
+def set_players_and_opponents(data):
+    global players, opponents
 
-    player_id = data['arena']['self']
-    for player_data in data['arena']['state'].values():
-        if player_data['id'] == player_id:
-            player = player_data
+    players_data = data['state']
+    self_href = data['_links']['self']['href']
+
+    for player_url, player_data in players_data.items():
+        if player_url == self_href:
+            players.append(player_data)
         else:
             opponents.append(player_data)
-
 
 @app.route("/", methods=['GET'])
 def index():
