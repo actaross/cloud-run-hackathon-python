@@ -127,17 +127,7 @@ global player_score, previous_score, score_stagnant_count, consecutive_hits_coun
                 else:
                     return 'T'
 
-    if not was_hit:
-        consecutive_hits_count = 0
-
-    if is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
-        return 'T'
-
-    if player_score == previous_score and score_stagnant_count <= 4:
-        score_stagnant_count += 1
-        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-
-            
+ 
     # Original
     return moves[random.randrange(len(moves))]
 
