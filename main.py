@@ -83,16 +83,17 @@ def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
 def calculate_threat_level(opponent, player_x, player_y):
-    opp_x, opp_y = opponent['x'], opponent['y']
+    opp_x, opp_y = opponent['position']
     distance = calculate_distance(player_x, player_y, opp_x, opp_y)
     return 1 / distance
 
 def get_opponent_direction(player_x, player_y, opponents):
-    for opponent in opponents:
-        opp_x, opp_y = opponent['x'], opponent['y']
+for opponent in opponents:
+        opp_x, opp_y = opponent['position']
         if calculate_distance(player_x, player_y, opp_x, opp_y) <= 3:
             return opponent['direction']
 
+    # Default to a random direction if unable to determine the opponent's direction
     return random.choice(['N', 'S', 'W', 'E'])
 
 def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
@@ -106,11 +107,13 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
 
     dx, dy = directions[player_direction]
     for opponent in opponents:
-        opp_x, opp_y = opponent['x'], opponent['y']
+        opp_x, opp_y = opponent['position']
         if (opp_x - player_x) * dx >= 0 and (opp_y - player_y) * dy >= 0:
             if calculate_distance(player_x, player_y, opp_x, opp_y) <= range_distance:
                 return True
+
     return False
+
 
 @app.route("/", methods=['GET'])
 def index():
@@ -152,6 +155,16 @@ def move():
     # Reset consecutive hits count if not hit in the current turn
     else:
         consecutive_hits_count = 0
+    # Check if consecutive hits occurred and move to escape
+    if consecutive_hits_count >= 2:
+        last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+        if last_hit_direction != player_direction:
+            if last_hit_direction == 'N':
+                return 'R'
+            elif last_hit_direction == 'S':
+                return 'L'
+            else:
+                return 'F'
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return 'T'
