@@ -58,7 +58,6 @@ def set_player_hit_status(hit):
 def set_player_and_opponents(data):
     global player_url, opponents
     player_url = None
-    opponents = []
     service_url = data['_links']['self']['href']
     # Extract player URL and opponent data from the received data
     for url, player_data in data['arena']['state'].items():
@@ -152,4 +151,5 @@ def move():
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
-  
+
+
