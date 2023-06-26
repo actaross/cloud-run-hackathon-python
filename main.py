@@ -102,8 +102,7 @@ def index():
 def move():
     #Original
     #request.get_data()
-         global player_x, player_y, player_direction, player_score, previous_score, was_hit, consecutive_hits_count, score_stagnant_count, previous_move
-
+    global player_x, player_y, player_direction, player_score, previous_score, was_hit, consecutive_hits_count, score_stagnant_count, previous_move
     # Extract data from the POST request
     data = request.get_json()
     player_x = data['arena']['state']['https://YOUR_SERVICE_URL']['x']
@@ -208,9 +207,6 @@ def move():
     # If no specific conditions are met, move forward ('F') by default
     logger.info("Moving forward")
     return 'F'
- 
-    
-    
     # Original
     # return moves[random.randrange(len(moves))]
 
