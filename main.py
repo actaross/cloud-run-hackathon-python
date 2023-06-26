@@ -131,6 +131,21 @@ def move():
         return 'T'
     else:
         previous_score= player_score
+    
+    if player_hit:
+        consecutive_hits_count += 1
+        if consecutive_hits_count >= 2:
+            last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+            if last_hit_direction != player_direction:
+                if last_hit_direction == 'N':
+                    return 'R'
+                elif last_hit_direction == 'S':
+                    return 'L'
+                else:
+                    return 'F'
+    # Reset consecutive hits count if not hit in the current turn
+    else:
+        consecutive_hits_count = 0
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
