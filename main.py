@@ -32,7 +32,7 @@ player_y = None
 player_direction = None
 player_score = None
 was_hit = None
-previous_score = None
+previous_score = 0
 score_stagnant_count = 0
 consecutive_hits_count = 0
 
@@ -132,27 +132,6 @@ def move():
     #Original
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
-    
-    # Check if score is increasing
-    if player_score > previous_score:
-        previous_score = player_score
-        score_stagnant_count = 0
-        return 'T'
-     # Original
-    if player_hit:
-        consecutive_hits_count += 1
-        if consecutive_hits_count >= 2:
-            last_hit_direction = get_opponent_direction(player_x, player_y, opponents_data)
-            if last_hit_direction != player_direction:
-                if last_hit_direction == 'N':
-                    return 'R'
-                elif last_hit_direction == 'S':
-                    return 'L'
-                else:
-                    return 'F'
-    # Reset consecutive hits count if not hit in the current turn
-    if not player_hit:
-        consecutive_hits_count = 0
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
