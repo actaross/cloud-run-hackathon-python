@@ -25,18 +25,10 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 moves = ['F', 'T', 'L', 'R']
 
-service_url = None
-player_url = None
-player_x = None
-player_y = None
-player_direction = None
-player_score = None
-was_hit = None
 previous_score = 0
 score_stagnant_count = 0
 consecutive_hits_count = 0
 
-ervice_url = "https://YOUR_SERVICE_URL"  # Replace with the actual service URL
 player_url = ""
 player_x = 0
 player_y = 0
@@ -132,6 +124,13 @@ def move():
     #Original
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
+    # Check if score is increasing
+    if player_score > previous_score:
+        previous_score = player_score
+        score_stagnant_count = 0
+        return 'T'
+    else
+        previous_score= player_score
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
