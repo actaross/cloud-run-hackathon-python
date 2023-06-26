@@ -111,7 +111,6 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         if (opp_x - player_x) * dx >= 0 and (opp_y - player_y) * dy >= 0:
             if calculate_distance(player_x, player_y, opp_x, opp_y) <= range_distance:
                 return True
-
     return False
 
 @app.route("/", methods=['GET'])
@@ -148,7 +147,7 @@ def move():
         consecutive_hits_count = 0
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-    return 'T'
+        return 'T'
     # Check if consecutive hits occurred and move to escape
     if consecutive_hits_count >= 2:
         last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
