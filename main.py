@@ -106,10 +106,12 @@ def index():
 @app.route("/", methods=['POST'])
 def move():
     #Original
-    #request.get_data()
+    request.get_data()
+    request.get_data()
+    logger.info(request.json)
     global player_score, previous_score, score_stagnant_count, consecutive_hits_count
     opponents_data = set_player_and_opponents(request.json)
-
+    logger.info(opponents_data)
     if player_score > previous_score:
         previous_score = player_score
         score_stagnant_count = 0
