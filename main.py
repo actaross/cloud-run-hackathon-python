@@ -107,8 +107,7 @@ def index():
 def move():
     #Original
     #request.get_data()
-global player_score, previous_score, score_stagnant_count, consecutive_hits_count
-
+    global player_score, previous_score, score_stagnant_count, consecutive_hits_count
     opponents_data = set_player_and_opponents(request.json)
 
     if player_score > previous_score:
@@ -126,8 +125,18 @@ global player_score, previous_score, score_stagnant_count, consecutive_hits_coun
                     return 'L'
                 else:
                     return 'T'
+    # Reset consecutive hits count if not hit in the current turn
+    if not was_hit:
+        consecutive_hits_count = 0
 
- 
+    # Check if any opponent is in front and within range distance 3
+    if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
+        return 'T'
+
+    # Check if score has not changed for 5 consecutive turns
+    if player_score == previous_score and score_stagnant_count <= 4:
+        score_stagnant_count += 1
+        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Original
     return moves[random.randrange(len(moves))]
 
