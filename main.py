@@ -25,13 +25,10 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 moves = ['F', 'T', 'L', 'R']
 
-# Global variables
-player_direction = 'N'
-player_score = 0
+previous_move = 'F'
 previous_score = 0
-previous_move = ''
-score_stagnant_count = 0
 consecutive_hits_count = 0
+score_stagnant_count = 0
 
 # Helper function to calculate Euclidean distance between two points
 def calculate_distance(x1, y1, x2, y2):
@@ -72,6 +69,30 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
 
     return False
 
+def set_player_and_opponent(arena_state):
+    player = None
+    opponents = []
+
+    for player_url, player_info in arena_state['arena']['state'].items():
+        if player_url == service_url:
+            player = {
+                'x': player_info['x'],
+                'y': player_info['y'],
+                'direction': player_info['direction'],
+                'wasHit': player_info['wasHit'],
+                'score': player_info['score']
+            }
+        else:
+            opponent = {
+                'x': player_info['x'],
+                'y': player_info['y'],
+                'direction': player_info['direction'],
+                'wasHit': player_info['wasHit'],
+                'score': player_info['score']
+            }
+            opponents.append(opponent)
+
+    return player, opponents
 
 @app.route("/", methods=['GET'])
 def index():
@@ -81,23 +102,23 @@ def index():
 def move():
     #Original
     #request.get_data()
-    #logger.info(request.json)
-    
-    
-    # TODO add your implementation here to replace the random response
-    global player_direction
-    global player_score
-    global previous_score
-    global previous_move
-    global score_stagnant_count
-    global consecutive_hits_count
+ global previous_move, previous_score, consecutive_hits_count, score_stagnant_count
 
-    # Get game information from the request
-    data = request.get_json()
-    player_x = data['playerX']
-    player_y = data['playerY']
-    opponents = data['opponents']
-    was_hit = data['wasHit']
+    # Log the received message
+    logger.info(request.json)
+
+    # Get the current arena state from the request
+    arena_state = request.json
+
+    # Set player and opponent based on the arena state
+    player, opponents = set_player_and_opponent(arena_state)
+
+    # Extract player information
+    player_x = player['x']
+    player_y = player['y']
+    player_direction = player['direction']
+    was_hit = player['wasHit']
+    player_score = player['score']
 
     # Check if score is increasing
     if player_score > previous_score:
