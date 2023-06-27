@@ -36,7 +36,7 @@ player_score = 0
 player_hit = False
 opponents = []
 move_count = 0
-
+score_decrease_counter = 0
 
 def set_player_position(x, y):
     global player_x, player_y
@@ -142,7 +142,7 @@ def index():
 
 @app.route("/", methods=['POST'])
 def move():
-    global player_score, previous_score, score_stagnant_count, consecutive_hits_count, move_count
+    global player_score, previous_score, score_stagnant_count, consecutive_hits_count, move_count, score_decrease_counter
     #Original
     # Increment move count
     move_count += 1
@@ -180,6 +180,20 @@ def move():
         consecutive_hits_count = 0
     # Check if consecutive hits occurred and move to escape
     # Check if any opponent is in front and within range distance 3
+ 
+
+    # Check if the score is decreasing
+    if player_score < previous_score:
+        score_decrease_counter += 1
+    else:
+        score_decrease_counter = 0
+    # Check if the score has been decreasing for four consecutive turns
+    if score_decrease_counter >= 4:
+        print("PB a debuger sur le tir:",opponents)
+        # Implement random move strategy
+        random_move = random.choices(['F', 'L'], weights=[0.7, 0.3])[0]
+        score_decrease_counter = 0
+        return random_move
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         print("Opponent detectoected to fire Opponents:",opponents)
         return 'T'
