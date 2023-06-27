@@ -181,13 +181,7 @@ def move():
         return 'R'  # Randomly choose a move
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
-    # Print player information
-    print("Player Information:")
-    print(f"Position: ({player_x}, {player_y})")
-    print("Direction:", player_direction)
-    print("Score:", player_score)
-    print("Player Hit:", player_hit)
-    print("Opponents:",opponents)
+ 
     # Check if score is increasing
     if player_score > previous_score:
         previous_score = player_score
@@ -217,15 +211,13 @@ def move():
         score_decrease_counter = 0
     # Check if the score has been decreasing for four consecutive turns
     if score_decrease_counter >= 4:
-        print("PB a debuger sur le tir:",opponents)
         # Implement random move strategy
         random_move = random.choices(['F', 'L'], weights=[0.7, 0.3])[0]
         score_decrease_counter = 0
         return random_move
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
-        print("Opponent detectoected to fire Opponents:",opponents)
         return random.choices(['T', 'R'], weights=[0.9, 0.1])[0]
-   # Calculate threat levels for all opponents
+    #Calculate threat levels for all opponents
     threat_levels = []
     for opponent in opponents:
         threat_level = calculate_threat_level(opponent, player_x, player_y, player_direction, player_score)
