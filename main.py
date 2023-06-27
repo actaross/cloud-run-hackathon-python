@@ -149,10 +149,16 @@ def move():
     # Check if it's time to randomly move
     if move_count % 300 == 0:
         move_count = 0
-        return random.choice(['F', 'L', 'R', 'T'])  # Randomly choose a move
-
+        return 'R'  # Randomly choose a move
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
+    # Print player information
+    print("Player Information:")
+    print(f"Position: ({player_x}, {player_y})")
+    print("Direction:", player_direction)
+    print("Score:", player_score)
+    print("Player Hit:", player_hit)
+    print("Opponents:",opponents)
     # Check if score is increasing
     if player_score > previous_score:
         previous_score = player_score
@@ -183,6 +189,7 @@ def move():
                 return 'F'
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
+        print("Opponent detectoected to fire Opponents:",opponents)
         return 'T'
    # Calculate threat levels for all opponents
     threat_levels = []
