@@ -101,7 +101,10 @@ def calculate_threat_level(opponent, player_x, player_y, player_direction, playe
             threat_level += 0.2
         elif opp_direction == 'E' and opp_x > player_x:
             threat_level += 0.2
-
+    #Adjust the threat level based on score difference with the highest scoring opponent
+    score_difference = opponent['score'] - player_score
+    if score_difference > 200:
+        threat_level += 0.4
     return threat_level
 
 
