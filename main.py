@@ -183,7 +183,40 @@ def move():
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return 'T'
- 
+   # Calculate threat levels for all opponents
+    threat_levels = []
+    for opponent in opponents:
+        threat_level = calculate_threat_level(opponent, player_x, player_y, player_direction, player_score)
+        threat_levels.append((opponent, threat_level))
+
+    # Sort opponents by threat level in descending order
+    sorted_opponents = sorted(threat_levels, key=lambda x: x[1], reverse=True)
+
+    # Target opponent with highest threat level
+    target_opponent = sorted_opponents[0][0]
+
+    # Determine the direction to the target opponent based on player's direction and opponent's position
+    target_x, target_y = target_opponent['position']
+    if player_direction == 'N':
+        if target_y < player_y:
+            return 'F'
+        elif target_y > player_y:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+    elif player_direction == 'S':
+        if target_y < player_y:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+        elif target_y > player_y:
+            return 'F'
+    elif player_direction == 'W':
+        if target_x < player_x:
+            return 'F'
+        elif target_x > player_x:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+    elif player_direction == 'E':
+        if target_x < player_x:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+        elif target_x > player_x:
+            return 'F'
     return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
