@@ -231,7 +231,7 @@ def move():
     else:
         score_decrease_counter = 0
     # Check if the score has been decreasing for four consecutive turns
-    if score_decrease_counter >= 4:
+    if score_decrease_counter >= 2:
         # Implement random move strategy
         random_move = random.choices(['F', 'L'], weights=[0.7, 0.3])[0]
         score_decrease_counter = 0
