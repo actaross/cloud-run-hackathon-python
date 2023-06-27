@@ -186,7 +186,7 @@ def move():
         return 'T'
     # Calculate threat levels for all opponents
     threat_levels = []
-    for opponent in opponents_data:
+    for opponent in opponents:
         threat_level = calculate_threat_level(opponent, player_x, player_y, player_direction, player_score)
         threat_levels.append((opponent, threat_level))
 
