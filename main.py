@@ -214,12 +214,12 @@ def move():
             consecutive_hits_count= 0
             if last_hit_direction != player_direction:
                 if last_hit_direction == 'N':
-                    return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]                    
+                    return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]                    
                 elif last_hit_direction == 'S':
-                    return 'L'
+                    random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
                 else:
                     return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-            return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
+            return random.choices(['R', 'F'], weights=[0.7, 0.3])[0]
     # Reset consecutive hits count if not hit in the current turn
     else:
         consecutive_hits_count = 0
