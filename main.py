@@ -160,6 +160,7 @@ def move():
     if player_score > previous_score:
         previous_score = player_score
         return 'T'
+    previous_score = player_score
     if player_hit:
         consecutive_hits_count += 1
         if consecutive_hits_count >= 3:
@@ -175,8 +176,7 @@ def move():
             else:
             return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Reset consecutive hits count if not hit in the current turn
-    else:
-        consecutive_hits_count = 0
+    consecutive_hits_count = 0
     # Check if consecutive hits occurred and move to escape
     # Check if any opponent is in front and within range distance 3
     # Check if the score is decreasing
@@ -193,7 +193,7 @@ def move():
         return random_move
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         print("Opponent detectoected to fire Opponents:",opponents)
-        return random.choices(['T', 'R'], weights=[0.8, 0.3])[0]
+        return random.choices(['T', 'R'], weights=[0.9, 0.1])[0]
    # Calculate threat levels for all opponents
     threat_levels = []
     for opponent in opponents:
