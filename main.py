@@ -209,9 +209,9 @@ def move():
     previous_score = player_score
     if player_hit:
         consecutive_hits_count += 1
-        if consecutive_hits_count >=1 :
+        if consecutive_hits_count >2 :
             #last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
-            consecutive_hits_count= 0
+            consecutive_hits_count= 0            
             #if last_hit_direction != player_direction:
             #    if last_hit_direction == 'N':
             #        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]                    
