@@ -107,7 +107,39 @@ def calculate_threat_level(opponent, player_x, player_y, player_direction, playe
         threat_level += 0.4
     return threat_level
 
+def move_to_target(player_x, player_y, player_direction, target_x, target_y):
+    dx = target_x - player_x
+    dy = target_y - player_y
 
+    # Check if the target is in front of the player
+    if player_direction == 'N' and dy > 0:
+        return 'F'
+    elif player_direction == 'S' and dy < 0:
+        return 'F'
+    elif player_direction == 'W' and dx > 0:
+        return 'F'
+    elif player_direction == 'E' and dx < 0:
+        return 'F'
+
+    # Calculate the Manhattan distance
+    distance = abs(dx) + abs(dy)
+
+    # Move towards the target based on the distance
+    if distance == 1:
+        return 'F'
+    elif distance == 2:
+        if abs(dx) == 1:
+            return 'L' if dx < 0 else 'R'
+        else:
+            return 'F'
+    elif distance == 3:
+        if abs(dx) == 2:
+            return 'L' if dx < 0 else 'R'
+        else:
+            return 'F'
+    else:
+        # Move randomly if the target is not within the allowed distances
+        return random.choice(['L', 'R', 'F'])
 
 def get_opponent_direction(player_x, player_y, opponents):
     for opponent in opponents:
@@ -174,7 +206,7 @@ def move():
                 else:
                     return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
             else:
-            return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
+                return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Reset consecutive hits count if not hit in the current turn
     consecutive_hits_count = 0
     # Check if consecutive hits occurred and move to escape
