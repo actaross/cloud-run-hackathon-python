@@ -167,6 +167,7 @@ def move():
         consecutive_hits_count += 1
         if consecutive_hits_count >= 3:
             last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+            consecutive_hits_count= 0
             if last_hit_direction != player_direction:
                 if last_hit_direction == 'N':
                     return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]                    
@@ -178,15 +179,6 @@ def move():
     else:
         consecutive_hits_count = 0
     # Check if consecutive hits occurred and move to escape
-    if consecutive_hits_count >= 2:
-        last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
-        if last_hit_direction != player_direction:
-            if last_hit_direction == 'N':
-                return 'R'
-            elif last_hit_direction == 'S':
-                return 'L'
-            else:
-                return 'F'
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         print("Opponent detectoected to fire Opponents:",opponents)
