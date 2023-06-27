@@ -107,6 +107,7 @@ def calculate_threat_level(opponent, player_x, player_y, player_direction, playe
         threat_level += 0.4
     return threat_level
 
+# Function to move towards the target opponent
 def move_to_target(player_x, player_y, player_direction, target_x, target_y):
     dx = target_x - player_x
     dy = target_y - player_y
@@ -121,25 +122,34 @@ def move_to_target(player_x, player_y, player_direction, target_x, target_y):
     elif player_direction == 'E' and dx < 0:
         return 'F'
 
-    # Calculate the Manhattan distance
-    distance = abs(dx) + abs(dy)
+    # Calculate the number of moves required to reach the target
+    num_moves = abs(dx) + abs(dy)
 
-    # Move towards the target based on the distance
-    if distance == 1:
+    # Move left or right if the target is on the same row
+    if dy == 0:
+        if dx < 0:
+            return 'L'
+        else:
+            return 'R'
+
+    # Move forward if the target is on the same column
+    if dx == 0:
         return 'F'
-    elif distance == 2:
-        if abs(dx) == 1:
-            return 'L' if dx < 0 else 'R'
+
+    # Move diagonally towards the target
+    if dx < 0:
+        if player_direction == 'N':
+            return 'L'
         else:
-            return 'F'
-    elif distance == 3:
-        if abs(dx) == 2:
-            return 'L' if dx < 0 else 'R'
-        else:
-            return 'F'
+            return 'R'
     else:
-        # Move randomly if the target is not within the allowed distances
-        return random.choice(['L', 'R', 'F'])
+        if player_direction == 'N':
+            return 'R'
+        else:
+            return 'L'
+
+    # Move randomly if the target is not within the allowed distances
+    return random.choice(['F', 'L', 'R'])
 
 def get_opponent_direction(player_x, player_y, opponents):
     for opponent in opponents:
@@ -232,27 +242,8 @@ def move():
 
     # Determine the direction to the target opponent based on player's direction and opponent's position
     target_x, target_y = target_opponent['position']
-    if player_direction == 'N':
-        if target_y < player_y:
-            return 'F'
-        elif target_y > player_y:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-    elif player_direction == 'S':
-        if target_y < player_y:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-        elif target_y > player_y:
-            return 'F'
-    elif player_direction == 'W':
-        if target_x < player_x:
-            return 'F'
-        elif target_x > player_x:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-    elif player_direction == 'E':
-        if target_x < player_x:
-            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
-        elif target_x > player_x:
-            return 'F'
-    return moves[random.randrange(len(moves))]
+    move_to_target(player_x, player_y, player_direction, target_x, target_y)
+    
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
