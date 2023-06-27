@@ -176,10 +176,10 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents_dat
         opp_x, opp_y = opponent['position']
 
         if (
-            (player_direction == 'N' and opp_x == player_x and opp_y > player_y and opp_y - player_y <= range_distance) or
-            (player_direction == 'S' and opp_x == player_x and opp_y < player_y and player_y - opp_y <= range_distance) or
-            (player_direction == 'W' and opp_y == player_y and opp_x > player_x and opp_x - player_x <= range_distance) or
-            (player_direction == 'E' and opp_y == player_y and opp_x < player_x and player_x - opp_x <= range_distance)
+            (player_direction == 'N' and opp_x == player_x and opp_y > player_y and opp_y - player_y < range_distance) or
+            (player_direction == 'S' and opp_x == player_x and opp_y < player_y and player_y - opp_y < range_distance) or
+            (player_direction == 'W' and opp_y == player_y and opp_x > player_x and opp_x - player_x < range_distance) or
+            (player_direction == 'E' and opp_y == player_y and opp_x < player_x and player_x - opp_x < range_distance)
         ):
             return True
 
@@ -209,17 +209,17 @@ def move():
     previous_score = player_score
     if player_hit:
         consecutive_hits_count += 1
-        if consecutive_hits_count >= 2:
-            last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+        if consecutive_hits_count >=1 :
+            #last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
             consecutive_hits_count= 0
-            if last_hit_direction != player_direction:
-                if last_hit_direction == 'N':
-                    return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]                    
-                elif last_hit_direction == 'S':
-                    random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-                else:
-                    return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-            return random.choices(['R', 'F'], weights=[0.7, 0.3])[0]
+            #if last_hit_direction != player_direction:
+            #    if last_hit_direction == 'N':
+            #        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]                    
+            #    elif last_hit_direction == 'S':
+            #        random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
+            #    else:
+            #        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
+            return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Reset consecutive hits count if not hit in the current turn
     else:
         consecutive_hits_count = 0
