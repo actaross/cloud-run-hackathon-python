@@ -160,17 +160,18 @@ def get_opponent_direction(player_x, player_y, opponents):
     # Default to a random direction if unable to determine the opponent's direction
     return random.choice(['N', 'S', 'W', 'E'])
 
-def is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
-    range_distance = 0
+ddef is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
+    range_distance = 3
 
     for opponent in opponents_data:
         opp_x, opp_y = opponent['position']
-        opp_direction = opponent['direction']
 
-        if (player_direction == 'N' and opp_direction == 'S' and opp_y > player_y and abs(opp_x - player_x) <= range_distance) or \
-           (player_direction == 'S' and opp_direction == 'N' and opp_y < player_y and abs(opp_x - player_x) <= range_distance) or \
-           (player_direction == 'W' and opp_direction == 'E' and opp_x > player_x and abs(opp_y - player_y) <= range_distance) or \
-           (player_direction == 'E' and opp_direction == 'W' and opp_x < player_x and abs(opp_y - player_y) <= range_distance):
+        if (
+            (player_direction == 'N' and opp_x == player_x and opp_y > player_y and opp_y - player_y <= range_distance) or
+            (player_direction == 'S' and opp_x == player_x and opp_y < player_y and player_y - opp_y <= range_distance) or
+            (player_direction == 'W' and opp_y == player_y and opp_x > player_x and opp_x - player_x <= range_distance) or
+            (player_direction == 'E' and opp_y == player_y and opp_x < player_x and player_x - opp_x <= range_distance)
+        ):
             return True
 
     return False
