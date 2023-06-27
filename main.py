@@ -83,10 +83,28 @@ def set_player_and_opponents(data):
 def calculate_distance(x1, y1, x2, y2):
     return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
-def calculate_threat_level(opponent, player_x, player_y):
+def calculate_threat_level(opponent, player_x, player_y, player_direction, player_score):
     opp_x, opp_y = opponent['position']
+    opp_direction = opponent['direction']
     distance = calculate_distance(player_x, player_y, opp_x, opp_y)
-    return 1 / distance
+
+    # Calculate the threat level based on distance, opponent score, and position
+    threat_level = 1 / distance + (opponent['score'] - player_score) / 10
+
+    # Adjust the threat level based on opponent position and direction
+    if opp_direction == player_direction:
+        if opp_direction == 'N' and opp_y < player_y:
+            threat_level += 0.2
+        elif opp_direction == 'S' and opp_y > player_y:
+            threat_level += 0.2
+        elif opp_direction == 'W' and opp_x < player_x:
+            threat_level += 0.2
+        elif opp_direction == 'E' and opp_x > player_x:
+            threat_level += 0.2
+
+    return threat_level
+
+
 
 def get_opponent_direction(player_x, player_y, opponents):
     for opponent in opponents:
@@ -115,30 +133,6 @@ def is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
 
     return False
 
-# Helper function to determine movement direction to reach target opponent
-def move_to_target(player_x, player_y, player_direction, target_x, target_y):
-    if player_direction == 'N':
-        if target_y < player_y:
-            return 'F'  # Move forward if target is above player
-        elif target_y > player_y:
-            return random.choice(['L', 'R'])  # Randomly turn left or right if target is below player
-    elif player_direction == 'S':
-        if target_y < player_y:
-            return random.choice(['L', 'R'])  # Randomly turn left or right if target is above player
-        elif target_y > player_y:
-            return 'F'  # Move forward if target is below player
-    elif player_direction == 'W':
-        if target_x < player_x:
-            return 'F'  # Move forward if target is to the left of player
-        elif target_x > player_x:
-            return random.choice(['L', 'R'])  # Randomly turn left or right if target is to the right of player
-    elif player_direction == 'E':
-        if target_x < player_x:
-            return random.choice(['L', 'R'])  # Randomly turn left or right if target is to the left of player
-        elif target_x > player_x:
-            return 'F'  # Move forward if target is to the right of player
-    # Default to moving forward ('F') if no specific conditions are met
-    return 'F'
 
 @app.route("/", methods=['GET'])
 def index():
@@ -187,10 +181,10 @@ def move():
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return 'T'
-    # Calculate threat levels for all opponents
+ # Calculate threat levels for all opponents
     threat_levels = []
     for opponent in opponents_data:
-        threat_level = calculate_threat_level(opponent, player_x, player_y)
+        threat_level = calculate_threat_level(opponent, player_x, player_y, player_direction, player_score)
         threat_levels.append((opponent, threat_level))
 
     # Sort opponents by threat level in descending order
@@ -199,21 +193,29 @@ def move():
     # Target opponent with highest threat level
     target_opponent = sorted_opponents[0][0]
 
-    # Target opponent with the highest threat level and aim possible
-    target_opponent = None
-    for opponent, threat_level in sorted_opponents:
-        if opponent['score'] > player_score:
-            target_opponent = opponent
-            break
-    # If no target opponent with higher score is found, target the opponent with the highest threat level
-    if not target_opponent:
-        target_opponent = sorted_opponents[0][0]
-
-    # Determine the direction to the target opponent based on player's direction
+    # Determine the direction to the target opponent based on player's direction and opponent's position
     target_x, target_y = target_opponent['position']
-    return move_to_target(player_x, player_y, player_direction, target_x, target_y)
-
-    #return moves[random.randrange(len(moves))]
+    if player_direction == 'N':
+        if target_y < player_y:
+            return 'F'
+        elif target_y > player_y:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+    elif player_direction == 'S':
+        if target_y < player_y:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+        elif target_y > player_y:
+            return 'F'
+    elif player_direction == 'W':
+        if target_x < player_x:
+            return 'F'
+        elif target_x > player_x:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+    elif player_direction == 'E':
+        if target_x < player_x:
+            return random.choices(['L', 'R'], weights=[0.7, 0.3])[0]
+        elif target_x > player_x:
+            return 'F'
+    return moves[random.randrange(len(moves))]
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
