@@ -242,8 +242,8 @@ def move():
 
     # Determine the direction to the target opponent based on player's direction and opponent's position
     target_x, target_y = target_opponent['position']
-    move_to_target(player_x, player_y, player_direction, target_x, target_y)
-    return random.choices(['T', 'R'], weights=[0.9, 0.1])[0]
+    return move_to_target(player_x, player_y, player_direction, target_x, target_y)
+    
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
