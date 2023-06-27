@@ -201,7 +201,8 @@ def move():
                     return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
             return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
     # Reset consecutive hits count if not hit in the current turn
-    consecutive_hits_count = 0
+    else:
+        consecutive_hits_count = 0
     # Check if consecutive hits occurred and move to escape
     # Check if any opponent is in front and within range distance 3
     # Check if the score is decreasing
