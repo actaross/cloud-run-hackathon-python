@@ -161,7 +161,7 @@ def get_opponent_direction(player_x, player_y, opponents):
     return random.choice(['N', 'S', 'W', 'E'])
 
 def is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
-    range_distance = 3
+    range_distance = 0
 
     for opponent in opponents_data:
         opp_x, opp_y = opponent['position']
