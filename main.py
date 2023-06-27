@@ -142,7 +142,7 @@ def index():
 
 @app.route("/", methods=['POST'])
 def move():
-    global player_score, previous_score, score_stagnant_count, consecutive_hits_count
+    global player_score, previous_score, score_stagnant_count, consecutive_hits_count, move_count
     #Original
     # Increment move count
     move_count += 1
