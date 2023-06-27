@@ -148,6 +148,7 @@ def move():
     move_count += 1
     # Check if it's time to randomly move
     if move_count % 300 == 0:
+        move_count = 0
         return random.choice(['F', 'L', 'R', 'T'])  # Randomly choose a move
 
     request.get_data()
