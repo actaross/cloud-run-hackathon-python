@@ -150,17 +150,26 @@ def move_to_target(player_x, player_y, player_direction, target_x, target_y):
 
     # Move randomly if the target is not within the allowed distances
     return random.choice(['F', 'L', 'R'])
-
 def get_opponent_direction(player_x, player_y, opponents):
+    range_distance = 3
     for opponent in opponents:
         opp_x, opp_y = opponent['position']
-        if calculate_distance(player_x, player_y, opp_x, opp_y) <= 3:
-            return opponent['direction']
+        if calculate_distance(player_x, player_y, opp_x, opp_y) <= range_distance:
+            if opp_x == player_x:
+                if opp_y > player_y:
+                    return 'S'
+                elif opp_y < player_y:
+                    return 'N'
+            elif opp_y == player_y:
+                if opp_x > player_x:
+                    return 'E'
+                elif opp_x < player_x:
+                    return 'W'
+    return 'W'
 
-    # Default to a random direction if unable to determine the opponent's direction
-    return random.choice(['N', 'S', 'W', 'E'])
 
-ddef is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
+
+def is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
     range_distance = 3
 
     for opponent in opponents_data:
