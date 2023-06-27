@@ -35,6 +35,7 @@ player_direction = ""
 player_score = 0
 player_hit = False
 opponents = []
+move_count = 0
 
 
 def set_player_position(x, y):
@@ -136,7 +137,6 @@ def move_to_target(player_x, player_y, player_direction, target_x, target_y):
             return random.choice(['L', 'R'])  # Randomly turn left or right if target is to the left of player
         elif target_x > player_x:
             return 'F'  # Move forward if target is to the right of player
-
     # Default to moving forward ('F') if no specific conditions are met
     return 'F'
 
@@ -148,6 +148,12 @@ def index():
 def move():
     global player_score, previous_score, score_stagnant_count, consecutive_hits_count
     #Original
+    # Increment move count
+    move_count += 1
+    # Check if it's time to randomly move
+    if move_count % 300 == 0:
+        return random.choice(['F', 'L', 'R', 'T'])  # Randomly choose a move
+
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
     # Check if score is increasing
@@ -192,6 +198,16 @@ def move():
 
     # Target opponent with highest threat level
     target_opponent = sorted_opponents[0][0]
+
+    # Target opponent with the highest threat level and aim possible
+    target_opponent = None
+    for opponent, threat_level in sorted_opponents:
+        if opponent['score'] > player_score:
+            target_opponent = opponent
+            break
+    # If no target opponent with higher score is found, target the opponent with the highest threat level
+    if not target_opponent:
+        target_opponent = sorted_opponents[0][0]
 
     # Determine the direction to the target opponent based on player's direction
     target_x, target_y = target_opponent['position']
