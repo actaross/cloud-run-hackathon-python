@@ -203,11 +203,10 @@ def move():
     previous_score = player_score
     if player_hit:
         consecutive_hits_count += 1
-        if consecutive_hits_count >2 :
-            #last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
+        if consecutive_hits_count >1 :
             consecutive_hits_count= 0            
             return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-        consecutive_hits_count = 0
+    consecutive_hits_count = 0
     # Check if any opponent is in front and within range distance 3
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return random.choices(['T', 'R'], weights=[0.9, 0.1])[0]
