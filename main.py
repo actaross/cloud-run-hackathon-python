@@ -150,6 +150,7 @@ def move_to_target(player_x, player_y, player_direction, target_x, target_y):
 
     # Move randomly if the target is not within the allowed distances
     return random.choice(['F', 'L', 'R'])
+
 def get_opponent_direction(player_x, player_y, opponents):
     range_distance = 3
     for opponent in opponents:
@@ -170,7 +171,7 @@ def get_opponent_direction(player_x, player_y, opponents):
 
 
 def is_any_opponent_in_front(player_x, player_y, player_direction, opponents_data):
-    range_distance = 3
+    range_distance = 4
 
     for opponent in opponents_data:
         opp_x, opp_y = opponent['position']
@@ -193,15 +194,8 @@ def index():
 def move():
     global player_score, previous_score, score_stagnant_count, consecutive_hits_count, move_count, score_decrease_counter
     #Original
-    # Increment move count
-    move_count += 1
-    # Check if it's time to randomly move
-    if move_count % 300 == 0:
-        move_count = 0
-        return 'R'  # Randomly choose a move
     request.get_data()
     player_url, opponents = set_player_and_opponents(request.json)
- 
     # Check if score is increasing
     if player_score > previous_score:
         previous_score = player_score
@@ -212,32 +206,17 @@ def move():
         if consecutive_hits_count >2 :
             #last_hit_direction = get_opponent_direction(player_x, player_y, opponents)
             consecutive_hits_count= 0            
-            #if last_hit_direction != player_direction:
-            #    if last_hit_direction == 'N':
-            #        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]                    
-            #    elif last_hit_direction == 'S':
-            #        random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-            #    else:
-            #        return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
             return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
-    # Reset consecutive hits count if not hit in the current turn
-    else:
         consecutive_hits_count = 0
-    # Check if consecutive hits occurred and move to escape
     # Check if any opponent is in front and within range distance 3
-    # Check if the score is decreasing
-    if player_score < previous_score:
-        score_decrease_counter += 1
-    else:
-        score_decrease_counter = 0
-    # Check if the score has been decreasing for four consecutive turns
-    if score_decrease_counter >= 2:
-        # Implement random move strategy
-        random_move = random.choices(['F', 'L'], weights=[0.7, 0.3])[0]
-        score_decrease_counter = 0
-        return random_move
     if is_any_opponent_in_front(player_x, player_y, player_direction, opponents):
         return random.choices(['T', 'R'], weights=[0.9, 0.1])[0]
+    next_left_dir = get_next_direction('L', player_direction)
+    next_right_dir = get_next_direction('R', player_direction)
+    if is_any_opponent_in_front(player_x, player_y, next_left_dir, opponents):
+        return 'L'
+    elif is_any_opponent_in_front(player_x, player_y, next_right_dir, opponents):
+        return 'R'
     #Calculate threat levels for all opponents
     threat_levels = []
     for opponent in opponents:
