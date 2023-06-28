@@ -149,7 +149,7 @@ def move_to_target(player_x, player_y, player_direction, target_x, target_y):
             return 'L'
 
     # Move randomly if the target is not within the allowed distances
-    return random.choice(['F', 'L', 'R'])
+    return random.choices(['F', 'R'], weights=[0.7, 0.3])[0]
 
 def get_opponent_direction(player_x, player_y, opponents):
     range_distance = 3
@@ -235,5 +235,4 @@ def move():
 
 if __name__ == "__main__":
   app.run(debug=False,host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
-
 
